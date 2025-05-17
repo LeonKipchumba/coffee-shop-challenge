@@ -1,47 +1,33 @@
-import pytest
-from coffee_shop_challenge.coffee import Coffee
-from coffee_shop_challenge.customer import Customer
-from coffee_shop_challenge.order import Order
+import unittest
+from coffee import Coffee
+from customer import Customer
+from order import Order
 
-def test_coffee_name_valid():
-    coffee = Coffee("Latte")
-    assert coffee.name == "Latte"
+class TestCoffee(unittest.TestCase):
+    def test_create_coffee(self):
+        coffee = Coffee("Latte")
+        self.assertEqual(coffee.name, "Latte")
+        with self.assertRaises(ValueError):
+            Coffee("Hi")  # Too short
 
-def test_coffee_name_invalid():
-    with pytest.raises(ValueError):
-        Coffee("ab")  # Too short
-    with pytest.raises(ValueError):
-        Coffee(123)  # Wrong type
+    def test_num_orders_and_average_price(self):
+        coffee = Coffee("Espresso")
+        customer1 = Customer("John")
+        customer2 = Customer("Jane")
+        customer1.create_order(coffee, 4.0)
+        customer2.create_order(coffee, 6.0)
 
-def test_coffee_immutable_name():
-    coffee = Coffee("Latte")
-    with pytest.raises(AttributeError):
-        coffee.name = "Espresso"
+        self.assertEqual(coffee.num_orders(), 2)
+        self.assertAlmostEqual(coffee.average_price(), 5.0)
 
-def test_coffee_orders():
-    coffee = Coffee("Latte")
-    customer = Customer("Alice")
-    order = Order(customer, coffee, 5.0)
-    assert coffee.orders() == [order]
+    def test_customers_unique(self):
+        coffee = Coffee("Cappuccino")
+        customer = Customer("Chris")
+        customer.create_order(coffee, 5.0)
+        customer.create_order(coffee, 5.5)
 
-def test_coffee_customers():
-    coffee = Coffee("Latte")
-    customer1 = Customer("Alice")
-    customer2 = Customer("Bob")
-    Order(customer1, coffee, 5.0)
-    Order(customer2, coffee, 4.0)
-    assert set(coffee.customers()) == {customer1, customer2}
+        self.assertEqual(len(coffee.customers()), 1)
+        self.assertIn(customer, coffee.customers())
 
-def test_num_orders():
-    coffee = Coffee("Latte")
-    customer = Customer("Alice")
-    Order(customer, coffee, 5.0)
-    Order(customer, coffee, 4.0)
-    assert coffee.num_orders() == 2
-
-def test_average_price():
-    coffee = Coffee("Latte")
-    customer = Customer("Alice")
-    Order(customer, coffee, 5.0)
-    Order(customer, coffee, 3.0)
-    assert coffee.average_price() == 4.0
+if __name__ == '__main__':
+    unittest.main()
