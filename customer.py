@@ -1,6 +1,6 @@
-class customer:
+class Customer:
     def __init__(self, name):
-        self.name = name  # uses the setter for validation
+        self.name = name
         self._orders = []
 
     @property
@@ -21,12 +21,13 @@ class customer:
         return list(set(order.coffee for order in self._orders))
 
     def create_order(self, coffee, price):
-        return order(self, coffee, price)
+        from order import Order  # ✅ Import here to avoid circular import
+        return Order(self, coffee, price)
 
     @classmethod
     def most_aficionado(cls, coffee):
         customer_spending = {}
-        for order in coffee.order():
+        for order in coffee.orders():
             customer = order.customer
             customer_spending[customer] = customer_spending.get(customer, 0) + order.price
         if customer_spending:
