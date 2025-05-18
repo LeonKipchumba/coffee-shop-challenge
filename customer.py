@@ -1,7 +1,8 @@
+from order import Order
+
 class Customer:
     def __init__(self, name):
         self.name = name
-        self._orders = []
 
     @property
     def name(self):
@@ -12,24 +13,21 @@ class Customer:
         if isinstance(value, str) and 1 <= len(value) <= 15:
             self._name = value
         else:
-            raise ValueError("Name must be a string between 1 and 15 characters.")
+            raise ValueError("Name must be a string with 1 to 15 characters.")
 
     def orders(self):
-        return self._orders
+        return [order for order in Order.all if order.customer == self]
 
     def coffees(self):
-        return list(set(order.coffee for order in self._orders))
+        return list(set([order.coffee for order in self.orders()]))
 
     def create_order(self, coffee, price):
-        from order import Order  # ✅ Import here to avoid circular import
         return Order(self, coffee, price)
 
     @classmethod
     def most_aficionado(cls, coffee):
-        customer_spending = {}
-        for order in coffee.orders():
-            customer = order.customer
-            customer_spending[customer] = customer_spending.get(customer, 0) + order.price
-        if customer_spending:
-            return max(customer_spending, key=customer_spending.get)
-        return None
+        customers = {}
+        for order in Order.all:
+            if order.coffee == coffee:
+                customers[order.customer] = customers.get(order.customer, 0) + order.price
+        return max(customers, key=customers.get) if customers else None
