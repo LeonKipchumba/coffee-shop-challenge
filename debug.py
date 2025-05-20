@@ -3,21 +3,37 @@ from coffee import Coffee
 from order import Order
 
 # Create customers
-c1 = Customer("Alice")
-c2 = Customer("Bob")
+alice = Customer("Alice")
+bob = Customer("Bob")
 
-# Create coffee types
+# Create coffees
 latte = Coffee("Latte")
-mocha = Coffee("Mocha")
+espresso = Coffee("Espresso")
 
-# Create some orders
-c1.create_order(latte, 4.5)
-c1.create_order(mocha, 5.5)
-c2.create_order(latte, 6.0)
+# Customers create orders
+alice.create_order(latte, 4.5)
+alice.create_order(espresso, 5.0)
+bob.create_order(latte, 3.5)
+bob.create_order(latte, 6.0)
 
-# Output expected behavior
-print(c1.orders())                 # [Order(customer=Alice, coffee=Latte, price=4.5), Order(customer=Alice, coffee=Mocha, price=5.5)]
-print(c1.coffees())                # [Coffee('Latte'), Coffee('Mocha')]
-print(latte.customers())          # [Customer('Alice'), Customer('Bob')]
-print(latte.average_price())      # 5.25
-print(Customer.most_aficionado(latte).name)  # Alice
+# Print orders for Alice
+print("Alice's Orders:")
+for order in alice.orders():
+    print(f"  {order.coffee.name} - ${order.price}")
+
+# Print unique coffees ordered by Alice
+print("Coffees ordered by Alice:", [coffee.name for coffee in alice.coffees()])
+
+# Print all customers who ordered Latte
+print("Customers who ordered Latte:", [customer.name for customer in latte.customers()])
+
+# Print total number of orders for Latte
+print("Latte Order Count:", latte.num_orders())
+
+# Print average price for Latte
+print("Latte Average Price:", latte.average_price())
+
+# Debug total orders stored
+print("All Orders:")
+for o in Order.all_orders:
+    print(f"{o.customer.name} ordered {o.coffee.name} for ${o.price}")
