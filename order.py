@@ -1,20 +1,21 @@
-class Order:
-    all_orders = []
+from customer import Customer
+from coffee import Coffee
 
+class Order:
     def __init__(self, customer, coffee, price):
-        if not hasattr(customer, 'name'):
+        if not isinstance(customer, Customer):
             raise TypeError("customer must be a Customer instance.")
-        if not hasattr(coffee, 'name'):
+        if not isinstance(coffee, Coffee):
             raise TypeError("coffee must be a Coffee instance.")
-        if not isinstance(price, float):
-            raise TypeError("price must be a float.")
-        if not (1.0 <= price <= 10.0):
-            raise ValueError("price must be between 1.0 and 10.0.")
+        if not isinstance(price, float) or not (1.0 <= price <= 10.0):
+            raise ValueError("price must be a float between 1.0 and 10.0.")
 
         self._customer = customer
         self._coffee = coffee
         self._price = price
-        Order.all_orders.append(self)
+
+        customer._orders.append(self)
+        coffee._orders.append(self)
 
     @property
     def customer(self):
@@ -26,4 +27,7 @@ class Order:
 
     @property
     def price(self):
-        return self._price  # Immutable
+        return self._price
+
+    def __repr__(self):
+        return f"Order(customer={self.customer.name}, coffee={self.coffee.name}, price={self.price})"
